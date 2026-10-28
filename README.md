@@ -1,212 +1,219 @@
 # 🌍 Personalized Travel Itinerary Planner
+### AI-Powered Intelligent Travel Companion • Skill Wallet Capstone Project
 
-A full-stack, AI-powered web application that generates personalized day-by-day travel itineraries based on user preferences, budget, travel style, and interests.
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![React](https://img.shields.io/badge/React-18.3+-61DAFB.svg?logo=react&logoColor=black)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.5+-3178C6.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Vite](https://img.shields.io/badge/Vite-5.4+-646CFF.svg?logo=vite&logoColor=white)](https://vitejs.dev)
+[![Python](https://img.shields.io/badge/Python-3.9+-3776AB.svg?logo=python&logoColor=white)](https://www.python.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Built as a **Skill Wallet Capstone Project**.
-
----
-
-## ✨ Features
-
-- **AI-Powered Itinerary Generation** — Day-by-day schedules using Google Gemini
-- **Destination Recommendations** — Top 3 destinations suggested based on preferences
-- **Preference Collection** — Vibe, budget, pace, interests, travelers, dates
-- **Route Optimization** — Geographic clustering of nearby attractions
-- **Budget Estimation** — Itemized cost estimates per category
-- **Edit & Regenerate** — Replace activities or regenerate individual days
-- **Trip Persistence** — Save, view, and manage trips via Supabase
-- **PDF Export** — Download full travel guides as PDFs
-- **Demo Mode** — Works without AI API key using deterministic fallback
+A modern, production-grade web application that crafts bespoke, day-by-day travel itineraries customized to user travel vibes, duration, traveler party, and itemized budgets. Powered by Google Gemini AI with resilient zero-dependency fallback for high reliability.
 
 ---
 
-## 🛠 Technology Stack
+## 🏛️ System Architecture
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 18, Vite, TypeScript, React Router |
-| Backend | Python, FastAPI, Pydantic, HTTPX |
-| Database | Supabase (PostgreSQL) |
-| AI | Google Gemini API (`google-generativeai`) |
-| PDF | ReportLab |
-| Deployment | Frontend → Render, Backend → Vercel |
+```mermaid
+graph TD
+    Client["💻 React 18 + Vite SPA<br/>(Glassmorphism CSS Design System)"]
+    API["⚡ FastAPI Web Server<br/>(REST API + Pydantic v2)"]
+    Gemini["🤖 Google Gemini 1.5 Flash<br/>(Live AI Model)"]
+    Demo["📦 Fallback Demo Service<br/>(Offline Resilient Engine)"]
+    DB[("🗄️ Supabase PostgreSQL<br/>(Trips, Days, Activities, Budgets)")]
+    MemDB[("🧠 In-Memory Storage Cache<br/>(Zero-Config Out-of-Box)")]
+    PDF["📄 ReportLab Engine<br/>(PDF Export with Emergency Guidelines)"]
+
+    Client -->|REST JSON / HTTP| API
+    API -->|Prompt & Extraction| Gemini
+    Gemini -.->|Failover / Offline| Demo
+    API -->|ORM & Persistence| DB
+    DB -.->|Fallback if Unconfigured| MemDB
+    API -->|Document Generation| PDF
+    PDF -->|Download Stream| Client
+```
 
 ---
 
-## 📁 Project Structure
+## ✨ Key Features
+
+1. **AI Recommendation Engine (Phase 8)**
+   * When no destination is specified, analyzes your vibe, duration, and budget level to curate the top 3 global destinations with match justifications.
+2. **Personalized Day-by-Day Itineraries (Phase 9)**
+   * Curates balanced morning, afternoon, and evening activities with realistic time allocations, dining suggestions, and transit tips.
+3. **Geographic Route Optimization**
+   * Automatically groups nearby attractions by geographic location clusters to eliminate unnecessary commute time.
+4. **Itemized Budget Estimator**
+   * Categorized cost projections for Accommodation, Food & Dining, Sightseeing Activities, and Local Transit.
+5. **Interactive Activity Customization & Regeneration (Phase 11)**
+   * ✏️ **Inline Editing**: Tweak activity titles, time slots, locations, notes, and costs.
+   * 🔄 **Single-Activity AI Replacement**: Swap out an activity for an alternative with custom instructions.
+   * 🔄 **Single-Day AI Regeneration**: Re-rolls all activities for that day only, keeping other days intact.
+6. **PDF Itinerary Export (Phase 12)**
+   * Beautifully formatted multi-page PDF with detailed schedules, budget tables, and universal emergency contacts (112/911).
+7. **Offline Demo Resilience (Phase 5)**
+   * Fully functional offline or without an API key using realistic multi-vibe demo datasets.
+
+---
+
+## 🛠️ Technology Stack
+
+| Component | Technology | Rationale |
+|---|---|---|
+| **Frontend Framework** | React 18, Vite, TypeScript | Lightning fast HMR, strict type safety, modern SPA architecture |
+| **Styling & Design System** | Vanilla CSS Glassmorphism | Custom design tokens, dark navy theme, teal/gold accents, 0 runtime overhead |
+| **Routing** | React Router 6 | Client-side SPA routing with nested layouts and route parameters |
+| **Backend API** | Python 3.9+, FastAPI | Asynchronous high-performance REST API with automatic OpenAPI documentation |
+| **Data Validation** | Pydantic v2 | Robust schema definitions and runtime request/response validation |
+| **AI Integration** | Google Gemini (`google-generativeai`) | High-speed structured JSON itinerary and recommendation generation |
+| **Database** | Supabase (PostgreSQL) | Relational persistence with foreign-key cascade deletions |
+| **Document Export** | ReportLab | Native PDF generation with custom tables, styling, and branding |
+| **Testing** | Pytest, TestClient | Automated integration test suite covering all endpoints and edge cases |
+
+---
+
+## 📁 Repository Structure
 
 ```
-personalized-travel-planner/
-├── frontend/              # React + Vite + TypeScript
+SkillWallet/
+├── frontend/                  # React 18 + Vite frontend
 │   ├── src/
-│   │   ├── components/    # Reusable UI components
-│   │   ├── pages/         # Route-level page components
-│   │   ├── layouts/       # Layout wrappers
-│   │   ├── services/      # API calls to backend
-│   │   ├── hooks/         # Custom React hooks
-│   │   ├── types/         # TypeScript type definitions
-│   │   └── utils/         # Utility functions
-│   ├── public/
+│   │   ├── components/        # UI components (forms, itinerary, layout, trip, ui)
+│   │   ├── hooks/             # Custom React hooks (useTrips, useTrip)
+│   │   ├── layouts/           # AppLayout with Navbar and ToastProvider
+│   │   ├── pages/             # DashboardPage, PlanTripPage, ItineraryPage
+│   │   ├── services/          # Axios API service clients
+│   │   ├── types/             # TypeScript interfaces and models
+│   │   ├── utils/             # Formatters and currency helpers
+│   │   ├── App.tsx            # Route definitions
+│   │   └── index.css          # Design system & glassmorphism theme
 │   ├── package.json
-│   └── .env.example
-├── backend/               # FastAPI Python backend
+│   └── vercel.json            # Vercel SPA rewrite configuration
+├── backend/                   # FastAPI backend
 │   ├── app/
-│   │   ├── main.py        # Application entry point
-│   │   ├── api/           # Route handlers
-│   │   ├── core/          # Config, logging, security
-│   │   ├── models/        # Data models
-│   │   ├── schemas/       # Pydantic schemas
-│   │   ├── services/      # Business logic (AI, PDF, geo)
-│   │   ├── database/      # Supabase client & operations
-│   │   └── utils/         # Helper utilities
-│   ├── tests/
-│   ├── requirements.txt
-│   └── .env.example
+│   │   ├── api/               # API routers (trips, itinerary, recommendations, export)
+│   │   ├── core/              # Settings, logging, and security
+│   │   ├── database/          # Supabase client & in-memory operations
+│   │   ├── schemas/           # Pydantic request/response schemas
+│   │   ├── services/          # Gemini AI, demo engine, and PDF export services
+│   │   └── main.py            # FastAPI application entry point
+│   ├── tests/                 # Comprehensive Pytest suite
+│   ├── Procfile               # Container and PaaS web entrypoint
+│   └── requirements.txt       # Python dependencies
 ├── supabase/
-│   └── migrations/        # SQL schema migrations
+│   └── migrations/            # SQL migration scripts
 ├── docs/
-│   ├── PROJECT_PROGRESS.md
-│   └── ACTIVITY_LOG.md
-├── .gitignore
-└── README.md
+│   ├── DEPLOYMENT_GUIDE.md    # Production deployment instructions
+│   ├── PROJECT_PROGRESS.md    # Milestone activity tracking
+│   └── ACTIVITY_LOG.md        # Chronological development log
+├── render.yaml                # Infrastructure as Code (IaC) blueprint
+├── MASTER_PLAN.md             # Complete 15-phase implementation plan
+└── README.md                  # Project overview (this document)
 ```
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Quickstart Guide
 
 ### Prerequisites
+* **Node.js** v18+ & npm
+* **Python** 3.9+ & pip
+* *(Optional)* Google Gemini API Key & Supabase project
 
-- Node.js 18+ and npm
-- Python 3.11+
-- A Supabase account and project
-- A Google Gemini API key (or run in demo mode without one)
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/YOUR_USERNAME/personalized-travel-planner.git
-cd personalized-travel-planner
-```
-
-### 2. Backend Setup
+### 1. Run Backend Server
 
 ```bash
 cd backend
+
+# Create and activate virtual environment
 python3 -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
+source venv/bin/activate       # On Windows: venv\Scripts\activate
+
+# Install dependencies
 pip install -r requirements.txt
-cp .env.example .env
-# Edit .env with your credentials
+
+# Start backend server
 uvicorn app.main:app --reload --port 8000
 ```
+> The API will be live at `http://localhost:8000`  
+> Interactive Swagger UI documentation: `http://localhost:8000/docs`
 
-### 3. Frontend Setup
+### 2. Run Frontend Client
 
 ```bash
 cd frontend
+
+# Install dependencies
 npm install
-cp .env.example .env.local
-# Edit .env.local with your backend URL
+
+# Start Vite dev server
 npm run dev
 ```
-
-The frontend will be available at `http://localhost:5173`  
-The backend API will be available at `http://localhost:8000`
+> Open your browser at `http://localhost:5173`
 
 ---
 
-## 🔑 Environment Variables
+## 🧪 Testing & Quality Assurance
 
-### Backend (`backend/.env`)
-
-```env
-# Google Gemini AI
-GEMINI_API_KEY=your_gemini_api_key_here
-
-# Supabase
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_ANON_KEY=your_anon_key_here
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
-
-# App Config
-DEMO_MODE=false          # Set to true to use fallback data without AI key
-CORS_ORIGINS=http://localhost:5173
-```
-
-### Frontend (`frontend/.env.local`)
-
-```env
-VITE_API_BASE_URL=http://localhost:8000
-```
-
----
-
-## 🗄 Database Schema
-
-See [`supabase/migrations/`](./supabase/migrations/) for full SQL schema.
-
-Key tables:
-- `trips` — Trip metadata and preferences
-- `itinerary_days` — Day-level itinerary data
-- `activities` — Individual activity entries
-- `budget_estimates` — Itemized cost breakdowns
-
----
-
-## 📄 API Documentation
-
-Once the backend is running, interactive API docs are available at:
-- Swagger UI: `http://localhost:8000/docs`
-- ReDoc: `http://localhost:8000/redoc`
-
----
-
-## 🧪 Running Tests
+The codebase includes an integration and unit test suite verifying all happy paths, edge cases, 404 handlers, validation errors, and PDF exports.
 
 ```bash
-# Backend tests
+# Run backend test suite (12 tests)
 cd backend
-source venv/bin/activate
-pytest tests/ -v
+./venv/bin/pytest -v
 
-# Frontend type checking
+# Run frontend production build test
 cd frontend
-npm run type-check
+npm run build
 ```
 
 ---
 
-## 🌐 Deployment
+## 🌐 Deployment Configuration
 
-| Service | Platform |
-|---------|---------|
-| Frontend | [Render](https://render.com) |
-| Backend | [Vercel](https://vercel.com) |
+This repository includes deployment configurations for both single-click and split deployments:
 
-See [`docs/DEPLOYMENT.md`](./docs/DEPLOYMENT.md) for step-by-step deployment instructions.
+* **Render Blueprint ([`render.yaml`](./render.yaml))**: Automatically provisions both the FastAPI web service and the React static site.
+* **Vercel Config ([`frontend/vercel.json`](./frontend/vercel.json))**: Handles client-side routing rewrites for SPA page refreshes.
+* **Container Entrypoint ([`backend/Procfile`](./backend/Procfile))**: Standard web process definition for PaaS environments.
 
----
-
-## 📋 Skill Wallet Progress
-
-See [`docs/PROJECT_PROGRESS.md`](./docs/PROJECT_PROGRESS.md) for the full activity-by-activity implementation checklist.
+For step-by-step production deployment instructions, refer to [`docs/DEPLOYMENT_GUIDE.md`](./docs/DEPLOYMENT_GUIDE.md).
 
 ---
 
-## 🔒 Security Notes
+## 📡 REST API Reference
 
-- Never commit `.env` files — they are in `.gitignore`
-- Supabase service-role keys are **backend-only** — never exposed to the browser
-- All AI responses are validated before storage or display
-- User inputs are validated via Pydantic on the backend
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/health` | Server health check, AI status, and DB connectivity |
+| `GET` | `/api/v1/trips` | List all saved travel trips |
+| `POST` | `/api/v1/trips` | Create a new trip record |
+| `GET` | `/api/v1/trips/{id}` | Retrieve complete trip with days and activities |
+| `PUT` | `/api/v1/trips/{id}` | Update trip title, duration, or preferences |
+| `DELETE` | `/api/v1/trips/{id}` | Delete trip and cascade delete activities |
+| `POST` | `/api/v1/recommendations` | Get top 3 AI destination recommendations |
+| `POST` | `/api/v1/itinerary/generate` | Generate full multi-day itinerary with budget |
+| `POST` | `/api/v1/itinerary/{id}/day/{num}/regenerate` | Regenerate activities for a single day |
+| `POST` | `/api/v1/itinerary/{id}/activity/replace` | Replace single activity slot with AI alternative |
+| `PUT` | `/api/v1/itinerary/{id}/activity` | Update individual activity fields inline |
+| `GET` | `/api/v1/export/{id}/pdf` | Export complete trip itinerary as styled PDF |
 
 ---
 
-## 📝 License
+## 📜 Capstone Submission Checklist
 
-MIT License — see [LICENSE](./LICENSE) for details.
+- [x] **Milestone 1**: Vibe Coding Environment Setup & Architecture
+- [x] **Milestone 2**: Database Schema Design & Supabase Migration
+- [x] **Milestone 3**: Backend Core APIs & Preference Collection
+- [x] **Milestone 4**: Gemini AI Prompt Engineering, Generation & Day/Activity Regeneration
+- [x] **Milestone 5**: PDF Itinerary Export & Integration Testing
+- [x] **Milestone 6**: Production Deployment Configuration (`render.yaml`, `vercel.json`)
+- [x] **Milestone 7**: Complete Documentation, Clean Commits & Master Plan Verification
 
 ---
 
-*Built with ❤️ for the Skill Wallet Capstone Program*
+## 📄 License
+
+This project is licensed under the MIT License — see the [LICENSE](./LICENSE) file for details.
+
+*Built with ❤️ for the Skill Wallet Capstone Project.*
