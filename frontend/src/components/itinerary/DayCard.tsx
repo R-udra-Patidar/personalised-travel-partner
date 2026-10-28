@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { ItineraryDay } from '../../types';
+import type { ItineraryDay, Activity } from '../../types';
 import { formatCurrency, activityTypeColor } from '../../utils/formatters';
 
 interface DayCardProps {
@@ -7,9 +7,15 @@ interface DayCardProps {
   tripId?: string;
   onRegenerateDay?: (dayNumber: number) => void;
   onReplaceActivity?: (dayNumber: number, activityIndex: number) => void;
+  onEditActivity?: (dayNumber: number, activityIndex: number, activity: Activity) => void;
 }
 
-export default function DayCard({ day, onRegenerateDay, onReplaceActivity }: DayCardProps) {
+export default function DayCard({
+  day,
+  onRegenerateDay,
+  onReplaceActivity,
+  onEditActivity,
+}: DayCardProps) {
   const [open, setOpen] = useState(true);
 
   return (
@@ -121,18 +127,28 @@ export default function DayCard({ day, onRegenerateDay, onReplaceActivity }: Day
                 )}
 
                 {/* Actions */}
-                {onReplaceActivity && (
-                  <div className="activity-actions">
+                <div className="activity-actions" style={{ display: 'flex', gap: '4px' }}>
+                  {onEditActivity && (
+                    <button
+                      className="btn btn-ghost btn-sm"
+                      onClick={() => onEditActivity(day.day_number, idx, act)}
+                      title="Edit activity details"
+                      style={{ fontSize: '13px', padding: '4px 6px' }}
+                    >
+                      ✏️
+                    </button>
+                  )}
+                  {onReplaceActivity && (
                     <button
                       className="btn btn-ghost btn-sm"
                       onClick={() => onReplaceActivity(day.day_number, idx)}
-                      data-tooltip="Replace activity"
-                      style={{ fontSize: '14px', padding: '4px 8px' }}
+                      title="Replace with AI alternative"
+                      style={{ fontSize: '13px', padding: '4px 6px' }}
                     >
                       🔄
                     </button>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             ))
           )}

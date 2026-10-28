@@ -5,8 +5,10 @@ import { tripsService } from '../services/trips';
 import { itineraryService } from '../services/itinerary';
 import DayCard from '../components/itinerary/DayCard';
 import BudgetSummary from '../components/itinerary/BudgetSummary';
+import EditActivityModal from '../components/itinerary/EditActivityModal';
 import { Spinner, Badge, useToast } from '../components/ui';
 import { travelerEmoji, budgetLabel } from '../utils/formatters';
+import type { Activity } from '../types';
 
 export default function ItineraryPage() {
   const { id } = useParams<{ id: string }>();
@@ -16,6 +18,11 @@ export default function ItineraryPage() {
 
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [regeneratingDay, setRegeneratingDay] = useState<number | null>(null);
+  const [editingTarget, setEditingTarget] = useState<{
+    dayNumber: number;
+    activityIndex: number;
+    activity: Activity;
+  } | null>(null);
 
   // Handle PDF Export
   const handleDownloadPDF = async () => {
@@ -38,7 +45,7 @@ export default function ItineraryPage() {
     if (!trip) return;
     try {
       setRegeneratingDay(dayNumber);
-      showToast(`Regenerating Day ${dayNumber}...`, 'info');
+      showToast(`Regenerating Day ${dayNumber} with AI...`, 'info');
 
       const result = await itineraryService.regenerateDay(trip.id, dayNumber, {
         existing_days: trip.days || [],
@@ -58,6 +65,121 @@ export default function ItineraryPage() {
       showToast(err.message || 'Failed to regenerate day', 'error');
     } finally {
       setRegeneratingDay(null);
+    }
+  };
+
+  // Handle Open Edit Modal
+  const handleOpenEdit = (dayNumber: number, activityIndex: number, activity: Activity) => {
+    setEditingTarget({ dayNumber, activityIndex, activity });
+  };
+
+  // Handle Save Manual Edits
+  const handleSaveActivity = async (updatedActivity: Activity) => {
+    if (!trip || !trip.days || !editingTarget) return;
+
+    try {
+      const updatedDays = trip.days.map((day) => {
+        if (day.day_number !== editingTarget.dayNumber) return day;
+        const newActivities = [...day.activities];
+        newActivities[editingTarget.activityIndex] = updatedActivity;
+
+        // Recalculate daily total estimate
+        const dayTotal = newActivities.reduce(
+          (sum, a) => sum + (a.estimated_cost_usd || 0),
+          0
+        );
+        return { ...day, activities: newActivities, daily_budget_estimate: dayTotal };
+      });
+
+      // Recalculate activities total in budget estimate
+      const totalActivitiesCost = updatedDays.reduce(
+        (sum, d) => sum + (d.daily_budget_estimate || 0),
+        0
+      );
+
+      const updatedBudget = trip.budget_estimate
+        ? {
+            ...trip.budget_estimate,
+            activities_estimate: totalActivitiesCost,
+            total_estimate:
+              (trip.budget_estimate.accommodation_estimate || 0) +
+              (trip.budget_estimate.food_estimate || 0) +
+              (trip.budget_estimate.transport_estimate || 0) +
+              totalActivitiesCost,
+          }
+        : undefined;
+
+      // Persist to database
+      await tripsService.saveItinerary(trip.id, {
+        days: updatedDays,
+        budget_estimate: updatedBudget,
+      });
+
+      setTrip({ ...trip, days: updatedDays, budget_estimate: updatedBudget });
+      showToast('Activity updated successfully!', 'success');
+    } catch (err: any) {
+      showToast(err.message || 'Failed to update activity', 'error');
+    }
+  };
+
+  // Handle AI Replace Single Activity
+  const handleAiReplaceActivity = async (reason: string) => {
+    if (!trip || !trip.days || !editingTarget) return;
+
+    try {
+      const targetDay = trip.days.find((d) => d.day_number === editingTarget.dayNumber);
+      if (!targetDay) return;
+
+      const result = await itineraryService.replaceActivity(trip.id, {
+        day_context: targetDay,
+        activity_index: editingTarget.activityIndex,
+        reason,
+        preferences: trip,
+      });
+
+      if (!result.activity) {
+        throw new Error('No replacement activity generated');
+      }
+
+      const newActivity = result.activity;
+      const updatedDays = trip.days.map((day) => {
+        if (day.day_number !== editingTarget.dayNumber) return day;
+        const newActivities = [...day.activities];
+        newActivities[editingTarget.activityIndex] = newActivity;
+        const dayTotal = newActivities.reduce(
+          (sum, a) => sum + (a.estimated_cost_usd || 0),
+          0
+        );
+        return { ...day, activities: newActivities, daily_budget_estimate: dayTotal };
+      });
+
+      // Recalculate activities total
+      const totalActivitiesCost = updatedDays.reduce(
+        (sum, d) => sum + (d.daily_budget_estimate || 0),
+        0
+      );
+
+      const updatedBudget = trip.budget_estimate
+        ? {
+            ...trip.budget_estimate,
+            activities_estimate: totalActivitiesCost,
+            total_estimate:
+              (trip.budget_estimate.accommodation_estimate || 0) +
+              (trip.budget_estimate.food_estimate || 0) +
+              (trip.budget_estimate.transport_estimate || 0) +
+              totalActivitiesCost,
+          }
+        : undefined;
+
+      await tripsService.saveItinerary(trip.id, {
+        days: updatedDays,
+        budget_estimate: updatedBudget,
+      });
+
+      setTrip({ ...trip, days: updatedDays, budget_estimate: updatedBudget });
+      showToast('Activity replaced with AI alternative!', 'success');
+    } catch (err: any) {
+      showToast(err.message || 'Failed to replace activity', 'error');
     }
   };
 
@@ -237,6 +359,12 @@ export default function ItineraryPage() {
                   day={day}
                   tripId={trip.id}
                   onRegenerateDay={handleRegenerateDay}
+                  onEditActivity={handleOpenEdit}
+                  onReplaceActivity={(dayNumber, idx) => {
+                    if (day.activities && day.activities[idx]) {
+                      handleOpenEdit(dayNumber, idx, day.activities[idx]);
+                    }
+                  }}
                 />
                 {regeneratingDay === day.day_number && (
                   <div
@@ -274,21 +402,33 @@ export default function ItineraryPage() {
             </h3>
             <ul style={{ paddingLeft: 'var(--space-4)', margin: 0, fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', lineHeight: 1.8 }}>
               <li>
+                <strong style={{ color: 'var(--color-text-main)' }}>Custom Adjustments:</strong> Click ✏️ on any activity to tweak duration, timing, or budget; click 🔄 to get an AI replacement.
+              </li>
+              <li>
                 <strong style={{ color: 'var(--color-text-main)' }}>Local Currency:</strong> Always carry some small cash bills for public transit and street markets.
               </li>
               <li>
                 <strong style={{ color: 'var(--color-text-main)' }}>Transit Timing:</strong> Attractions in each day are clustered together to minimize commute times.
               </li>
               <li>
-                <strong style={{ color: 'var(--color-text-main)' }}>Reservations:</strong> Book popular museums and dining spots 24-48 hours in advance during peak season.
-              </li>
-              <li>
-                <strong style={{ color: 'var(--color-text-main)' }}>Emergency:</strong> Emergency services and contact numbers are included in the downloadable PDF.
+                <strong style={{ color: 'var(--color-text-main)' }}>Emergency Contacts:</strong> Emergency guidelines and numbers are generated and included in the downloadable PDF.
               </li>
             </ul>
           </div>
         </div>
       </div>
+
+      {/* Edit / Replace Activity Modal */}
+      {editingTarget && (
+        <EditActivityModal
+          activity={editingTarget.activity}
+          dayNumber={editingTarget.dayNumber}
+          activityIndex={editingTarget.activityIndex}
+          onSave={handleSaveActivity}
+          onAiReplace={handleAiReplaceActivity}
+          onClose={() => setEditingTarget(null)}
+        />
+      )}
     </div>
   );
 }

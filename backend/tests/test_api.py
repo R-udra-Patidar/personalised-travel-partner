@@ -126,3 +126,46 @@ def test_regenerate_day_and_pdf_export():
     assert pdf_res.headers["content-type"] == "application/pdf"
     assert len(pdf_res.content) > 100
 
+
+def test_replace_and_update_activity():
+    # 1. Create a trip with an itinerary
+    trip_payload = {
+        "title": "Rome Weekend",
+        "destination": "Rome, Italy",
+        "travel_vibe": "cultural",
+        "budget_level": "moderate",
+        "travel_days": 2,
+    }
+    create_res = client.post("/api/v1/trips", json=trip_payload)
+    trip_id = create_res.json()["id"]
+
+    gen_res = client.post("/api/v1/itinerary/generate", json={
+        "destination": "Rome, Italy",
+        "travel_days": 2,
+        "trip_id": trip_id
+    })
+    trip_data = gen_res.json()
+    first_day = trip_data["days"][0]
+    first_act = first_day["activities"][0]
+
+    # 2. Test replace activity
+    replace_res = client.post(f"/api/v1/itinerary/{trip_id}/activity/replace", json={
+        "day_context": first_day,
+        "activity_index": 0,
+        "reason": "Looking for a pasta cooking class instead"
+    })
+    assert replace_res.status_code == 200
+    replace_data = replace_res.json()
+    assert "activity" in replace_data
+    assert "name" in replace_data["activity"]
+
+    # 3. Test update activity details
+    act_id = first_act.get("id")
+    if act_id:
+        update_res = client.put(f"/api/v1/itinerary/{trip_id}/activity", json={
+            "activity_id": act_id,
+            "updates": {"name": "Colosseum Private Guided Tour", "estimated_cost_usd": 65.0}
+        })
+        assert update_res.status_code == 200
+        assert update_res.json()["success"] is True
+

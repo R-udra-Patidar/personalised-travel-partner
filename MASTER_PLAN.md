@@ -22,9 +22,9 @@ Phase 7 — Trip Preferences UI       ██████████ 100% (Compl
 Phase 8 — Recommendations Engine    ██████████ 100% (Completed)
 Phase 9 — Itinerary Generation      ██████████ 100% (Completed)
 Phase 10 — Trip Save & Management   ██████████ 100% (Completed)
-Phase 11 — Edit & Regenerate        ░░░░░░░░░░   0% (Next up)
-Phase 12 — PDF Export               ░░░░░░░░░░   0% (not started)
-Phase 13 — Testing                  ░░░░░░░░░░   0% (not started)
+Phase 11 — Edit & Regenerate        ██████████ 100% (Completed)
+Phase 12 — PDF Export               ██████████ 100% (Completed)
+Phase 13 — Testing                  ░░░░░░░░░░   0% (Next up)
 Phase 14 — Deployment               ░░░░░░░░░░   0% (not started)
 Phase 15 — Final Docs & Submit      ░░░░░░░░░░   0% (not started)
 ```
@@ -201,28 +201,36 @@ Complete modular project skeleton created:
 
 ---
 
-## ⏳ PHASE 11 — Edit & Regenerate Activities
+## ✅ PHASE 11 — Edit & Regenerate Activities
 **Skill Wallet:** Milestone 4, Activity 4.3
-**Status:** Not started
+**Status:** 100% Complete ✅
 
-### What gets built
-- Replace single activity (AI generates substitute)
-- Edit activity inline (name, time, cost, notes)
-- Regenerate entire day (AI, one day only)
-- Changes saved to Supabase
-- Other days unaffected
+### What was built & verified ✅
+- `EditActivityModal.tsx`:
+  - Tab 1: Inline edit form (Title, Time slot, Est. Cost, Location, Description, Practical notes, Meal recommendation, and Booking toggle)
+  - Tab 2: AI Substitute slot generator with custom user prompt (e.g. "Looking for outdoors / kid-friendly")
+- DayCard actions:
+  - ✏️ Edit Activity opens modal to customize individual activity details
+  - 🔄 Replace Activity triggers AI alternative generation
+  - 🔄 Regenerate Entire Day refreshes schedule for only that day, preserving all other days
+- Real-time recalculation of daily budgets and trip itemized budget totals
+- Database persistence via `update_single_activity` and `save_full_itinerary`
 
 ---
 
-## ⏳ PHASE 12 — PDF Export
+## ✅ PHASE 12 — PDF Export
 **Skill Wallet:** Milestone 5, Activity 5.2
-**Status:** Not started
+**Status:** 100% Complete ✅
 
-### PDF contents
-- Cover: destination, dates, traveler info
-- Day-by-day schedule with times, locations, costs
-- Budget summary table
-- Emergency contacts (labeled as general reference)
+### What was built & verified ✅
+- Full backend ReportLab PDF generation service (`pdf_service.py`):
+  - Cover banner: Destination, trip dates, duration, vibe, and budget level
+  - Day-by-day itinerary table with time slots, activities, locations, tips, and costs
+  - Itemized budget table: Accommodation, Food & Dining, Activities, and Transit
+  - Emergency contacts & travel guidance (police, international emergency 112, healthcare, embassy)
+  - Capstone project branding & footer
+- Frontend PDF trigger in `ItineraryPage.tsx` with Blob stream download and dynamic file naming
+- Automated integration test in `backend/tests/test_api.py` validating PDF MIME type and binary byte payload
 
 ---
 

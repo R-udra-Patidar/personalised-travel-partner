@@ -164,6 +164,43 @@ def generate_trip_pdf(trip_data: Dict[str, Any]) -> bytes:
             ]))
             elements.append(bt)
 
+        # Emergency & General Travel Reference
+        elements.append(Spacer(1, 15))
+        elements.append(Paragraph("Emergency Contacts & Travel Reference", day_heading_style))
+        emergency_data = [
+            ["Service / Reference", "Contact Details & Guidance"],
+            ["Local Emergency (Police/Ambulance)", "112 (Universal) / 911 / Inquire at local hotel reception"],
+            ["Tourist Assistance & Healthcare", "Consult nearest international hospital or travel insurance 24/7 hotline"],
+            ["Consulate / Embassy", "Register trip with your national embassy before traveling"],
+            ["Important Documents", "Save offline digital copies of passport, visa, and reservations on mobile"],
+        ]
+        et = Table(emergency_data, colWidths=[220, 310])
+        et.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1E293B')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 8.5),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#E2E8F0')),
+            ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#F8FAFC')]),
+            ('TOPPADDING', (0, 0), (-1, -1), 4),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+        ]))
+        elements.append(et)
+
+        # Footer note
+        elements.append(Spacer(1, 15))
+        footer_style = ParagraphStyle(
+            'PdfFooter',
+            parent=styles['Normal'],
+            fontSize=8,
+            textColor=colors.HexColor('#94A3B8'),
+            alignment=1
+        )
+        elements.append(Paragraph(
+            "Generated with AI-powered Personalized Travel Itinerary Planner • Skill Wallet Capstone Project",
+            footer_style
+        ))
+
         doc.build(elements)
         buffer.seek(0)
         return buffer.getvalue()
