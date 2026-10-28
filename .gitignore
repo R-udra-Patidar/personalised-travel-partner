@@ -1,0 +1,86 @@
+# ============================================================
+# Personalized Travel Itinerary Planner — .gitignore
+# ============================================================
+
+# ----- Environment Variables (NEVER commit) -----
+.env
+.env.local
+.env.production
+.env.staging
+backend/.env
+frontend/.env
+frontend/.env.local
+
+# ----- Python -----
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+pip-wheel-metadata/
+*.whl
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+backend/venv/
+backend/.venv/
+
+# ----- Node / Frontend -----
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.vite/
+.npm
+*.tsbuildinfo
+
+# ----- IDE & Editor -----
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+*.sublime-project
+*.sublime-workspace
+.cursor/
+
+# ----- Logs -----
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ----- Testing -----
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+*.coveragerc
+.nyc_output/
+cypress/videos/
+cypress/screenshots/
+
+# ----- Generated PDFs (temporary) -----
+backend/generated_pdfs/
+*.pdf
+
+# ----- Supabase local (if using local dev) -----
+supabase/.branches/
+supabase/.temp/
+
+# ----- Misc -----
+*.bak
+*.tmp
+.cache/
