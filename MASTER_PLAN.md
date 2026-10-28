@@ -24,9 +24,9 @@ Phase 9 — Itinerary Generation      ██████████ 100% (Compl
 Phase 10 — Trip Save & Management   ██████████ 100% (Completed)
 Phase 11 — Edit & Regenerate        ██████████ 100% (Completed)
 Phase 12 — PDF Export               ██████████ 100% (Completed)
-Phase 13 — Testing                  ░░░░░░░░░░   0% (Next up)
-Phase 14 — Deployment               ░░░░░░░░░░   0% (not started)
-Phase 15 — Final Docs & Submit      ░░░░░░░░░░   0% (not started)
+Phase 13 — Testing                  ██████████ 100% (Completed)
+Phase 14 — Deployment               ██████████ 100% (Completed)
+Phase 15 — Final Docs & Submit      ░░░░░░░░░░   0% (Next up)
 ```
 
 ---
@@ -234,28 +234,42 @@ Complete modular project skeleton created:
 
 ---
 
-## ⏳ PHASE 13 — Testing
+## ✅ PHASE 13 — Testing
 **Skill Wallet:** Milestone 5, Activity 5.3
-**Status:** Not started
+**Status:** 100% Complete ✅
 
-### Tests to write
-- All CRUD endpoints (happy path + error cases)
-- AI service with mocked Gemini
-- Demo mode fallback
-- PDF generation with sample data
+### What was built & verified ✅
+- Complete pytest integration test suite in `backend/tests/test_api.py` (12 tests passing in 0.33s):
+  - `test_health_check` & `test_root_endpoint`: Core server liveness and service metadata
+  - `test_create_and_get_trip`: Trip creation, retrieval, and listing
+  - `test_recommendations_endpoint`: AI recommendation format and cost assertions
+  - `test_itinerary_generate_and_save`: Multi-day itinerary generation with geographic clustering and itemized budgets
+  - `test_regenerate_day_and_pdf_export`: Single day regeneration without affecting other days + PDF binary payload validation
+  - `test_replace_and_update_activity`: AI activity substitution and inline field updates
+  - `test_trip_not_found_handling`: Validates proper 404 responses across GET, PUT, DELETE, and export for non-existent entities
+  - `test_invalid_input_validation`: Validates 422 Unprocessable Entity responses on invalid days (<1 or >30)
+  - `test_trip_full_lifecycle`: Complete Create → Update → Delete → 404 verification
+  - `test_demo_fallback_service`: High-quality fallback behavior verified across multiple vibes (adventure, culture, etc.)
+  - `test_pdf_generation_edge_cases`: Empty trips, missing budgets, and special/accented characters
+- Frontend production test: `npm run build` compiled 115 modules into static assets in 372ms with 0 errors.
 
 ---
 
-## ⏳ PHASE 14 — Deployment
+## ✅ PHASE 14 — Deployment Preparation
 **Skill Wallet:** Milestone 6 (Activities 6.1, 6.2)
-**Status:** Not started
+**Status:** 100% Complete ✅
 
-### Frontend → Render
-- Static site, root: `frontend`, build: `npm run build`, publish: `dist`
-
-### Backend → Vercel
-- Python app, root: `backend`, add all env vars
-- Create `vercel.json`
+### What was built & verified ✅
+- Infrastructure as Code (IaC) Render Blueprint [`render.yaml`](render.yaml):
+  - Pre-configured FastAPI Python web service (`travel-planner-api`) with health checks on `/health`
+  - Pre-configured React + Vite static site (`travel-planner-web`) with SPA routing rewrites
+- Vercel SPA client-side routing configuration [`frontend/vercel.json`](frontend/vercel.json)
+- Production container Procfile [`backend/Procfile`](backend/Procfile)
+- Detailed production guide [`docs/DEPLOYMENT_GUIDE.md`](docs/DEPLOYMENT_GUIDE.md) covering:
+  - 1-Click Render deployment instructions
+  - Split deployment (Vercel frontend + Render backend)
+  - Complete environment variables matrix
+  - Supabase SQL schema migration steps and post-deployment curl verification
 
 ---
 
