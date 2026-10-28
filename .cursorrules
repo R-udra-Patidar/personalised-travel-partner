@@ -1,0 +1,85 @@
+# Cursor AI Agent Rules
+# Personalized Travel Itinerary Planner — Skill Wallet Capstone
+
+## Project Overview
+This is a full-stack AI-powered travel itinerary planner.
+- Frontend: React 18 + Vite + TypeScript + React Router
+- Backend: Python + FastAPI + Pydantic
+- Database: Supabase (PostgreSQL)
+- AI: Google Gemini API (google-generativeai)
+- PDF: ReportLab
+- Deployment: Frontend → Render, Backend → Vercel
+
+## Project Structure
+- `/frontend/` — React Vite TypeScript app
+- `/backend/` — FastAPI Python app
+- `/supabase/migrations/` — SQL schema files
+- `/docs/` — Progress tracking and documentation
+
+## Code Style Rules
+
+### General
+- Write clean, readable, production-quality code
+- Add comments for non-obvious logic
+- Never hardcode API keys, secrets, or passwords
+- Always use environment variables for configuration
+- Handle errors gracefully with meaningful messages
+- Never expose sensitive data in logs or responses
+
+### TypeScript / Frontend
+- Use TypeScript with strict mode enabled
+- Define interfaces/types in `/frontend/src/types/`
+- Use functional components with hooks only (no class components)
+- Put API calls in `/frontend/src/services/` — never in components
+- Use React Router for navigation
+- Name components in PascalCase, hooks as useXxx
+- Use async/await, not .then() chains
+
+### Python / Backend
+- Use Python 3.11+ syntax
+- All FastAPI endpoints must use Pydantic schemas for request/response
+- Use async def for all endpoints that do I/O
+- Keep routes thin — business logic goes in `/backend/app/services/`
+- Database operations go in `/backend/app/database/`
+- AI integration goes in `/backend/app/services/ai_service.py`
+- Use appropriate HTTP status codes (200, 201, 400, 404, 422, 500)
+- Log with Python's logging module — never log secrets
+
+### Database
+- All Supabase queries go through `/backend/app/database/`
+- Never expose service-role key to frontend
+- Use the anon key on the frontend only (when needed)
+- Use parameterized queries to prevent SQL injection
+
+### AI Integration
+- AI provider logic is isolated in `ai_service.py`
+- Always validate AI responses before storing or displaying
+- Implement demo mode fallback when GEMINI_API_KEY is missing
+- Never claim demo content is a live AI response
+- Label demo content clearly
+
+## Naming Conventions
+- Files: snake_case for Python, kebab-case or PascalCase for React components
+- Database tables: snake_case (trips, itinerary_days, activities)
+- API endpoints: /api/v1/resource (plural nouns)
+- Environment variables: UPPER_SNAKE_CASE
+
+## Key Environment Variables
+Backend:
+- GEMINI_API_KEY — Google Gemini API key
+- SUPABASE_URL — Supabase project URL
+- SUPABASE_ANON_KEY — Supabase anonymous key
+- SUPABASE_SERVICE_ROLE_KEY — Server-side only
+- DEMO_MODE — "true" to use fallback without AI key
+- CORS_ORIGINS — Allowed frontend origins
+
+Frontend:
+- VITE_API_BASE_URL — Backend API base URL
+
+## What NOT to do
+- Never commit .env files
+- Never put API keys in source code
+- Never use hardcoded sample data as a substitute for real DB operations
+- Never create fake buttons that do nothing
+- Never claim external services work unless actually tested
+- Never skip error handling
