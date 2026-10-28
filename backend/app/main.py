@@ -24,16 +24,23 @@ app = FastAPI(
 )
 
 # ── CORS Middleware ──────────────────────────────────────────────────────────
-# Allow frontend origins + wildcards in development
-origins = settings.cors_origins_list
-if "http://localhost:5173" not in origins:
-    origins.append("http://localhost:5173")
-if "http://localhost:3000" not in origins:
-    origins.append("http://localhost:3000")
+# Allow frontend origins including Render deployments and local development
+origins = [o.strip() for o in settings.cors_origins_list if o.strip()]
+for default_origin in [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:3000",
+    "https://travel-planner-web-y5gt.onrender.com",
+    "https://travel-planner-web.onrender.com",
+]:
+    if default_origin not in origins:
+        origins.append(default_origin)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"] if settings.app_env == "development" else origins,
+    allow_origins=origins,
+    allow_origin_regex=r"^https:\/\/.*\.onrender\.com$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
