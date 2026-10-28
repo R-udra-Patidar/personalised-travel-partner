@@ -5,10 +5,13 @@ Isolation principle: ALL Gemini API calls go through this module only.
 Every function implements a demo fallback so the app works without an API key.
 AI responses are validated before returning — never trusted blindly.
 """
+# pyrefly: ignore [missing-import]
+import google.generativeai as genai
 import json
 import logging
 from typing import Optional
 from app.core.config import settings
+
 from app.services.demo_service import (
     get_demo_recommendations,
     get_demo_itinerary,
