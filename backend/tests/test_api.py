@@ -85,3 +85,44 @@ def test_itinerary_generate_and_save():
     assert "days" in data
     assert len(data["days"]) == 3
     assert "budget_estimate" in data
+
+
+def test_regenerate_day_and_pdf_export():
+    # 1. Create a trip
+    trip_payload = {
+        "title": "Kyoto Explorer",
+        "destination": "Kyoto, Japan",
+        "travel_vibe": "cultural",
+        "budget_level": "moderate",
+        "travel_days": 3,
+        "traveler_type": "solo"
+    }
+    create_res = client.post("/api/v1/trips", json=trip_payload)
+    assert create_res.status_code == 201
+    trip_id = create_res.json()["id"]
+
+    # 2. Generate and save itinerary
+    gen_payload = {
+        "destination": "Kyoto, Japan",
+        "travel_vibe": "cultural",
+        "budget_level": "moderate",
+        "travel_days": 3,
+        "trip_id": trip_id
+    }
+    gen_res = client.post("/api/v1/itinerary/generate", json=gen_payload)
+    assert gen_res.status_code == 200
+
+    # 3. Regenerate single day
+    regen_res = client.post(
+        f"/api/v1/itinerary/{trip_id}/day/2/regenerate",
+        json={"reason": "User wanted more gardens"}
+    )
+    assert regen_res.status_code == 200
+    assert "day" in regen_res.json()
+
+    # 4. Test PDF export
+    pdf_res = client.get(f"/api/v1/export/{trip_id}/pdf")
+    assert pdf_res.status_code == 200
+    assert pdf_res.headers["content-type"] == "application/pdf"
+    assert len(pdf_res.content) > 100
+
