@@ -16,6 +16,8 @@ class GenerateRequest(BaseModel):
     travel_vibe: str = "mixed"
     budget_level: str = "moderate"
     travel_days: int = Field(5, ge=1, le=30)
+    start_date: Optional[str] = None
+    num_travelers: Optional[int] = 1
     traveler_type: str = "solo"
     interests: List[str] = []
     trip_id: Optional[str] = None

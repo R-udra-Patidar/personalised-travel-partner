@@ -6,6 +6,8 @@ export interface TripPreferences {
   travel_vibe: string;
   budget_level: BudgetLevel;
   travel_days: number;
+  start_date?: string;
+  num_travelers?: number;
   traveler_type: TravelerType;
   interests: string[];
 }
@@ -57,6 +59,8 @@ export interface Trip {
   travel_vibe: string;
   budget_level: BudgetLevel;
   travel_days: number;
+  start_date?: string;
+  num_travelers?: number;
   traveler_type: TravelerType;
   interests: string[];
   created_at?: string;

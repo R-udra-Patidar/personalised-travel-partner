@@ -71,6 +71,8 @@ export default function PlanTripPage() {
         travel_vibe: prefs.travel_vibe,
         budget_level: prefs.budget_level,
         travel_days: prefs.travel_days,
+        start_date: prefs.start_date,
+        num_travelers: prefs.num_travelers,
         traveler_type: prefs.traveler_type,
         interests: prefs.interests,
       });
@@ -83,6 +85,8 @@ export default function PlanTripPage() {
         travel_vibe: prefs.travel_vibe,
         budget_level: prefs.budget_level,
         travel_days: prefs.travel_days,
+        start_date: prefs.start_date,
+        num_travelers: prefs.num_travelers,
         traveler_type: prefs.traveler_type,
         interests: prefs.interests,
         trip_id: tripData.id,

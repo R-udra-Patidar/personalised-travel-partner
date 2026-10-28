@@ -43,6 +43,8 @@ export default function TripPreferenceForm({ onSubmit, loading = false }: TripPr
     travel_vibe: 'mixed',
     budget_level: 'moderate',
     travel_days: 5,
+    start_date: '',
+    num_travelers: 1,
     traveler_type: 'solo',
     interests: [],
   });
@@ -138,11 +140,11 @@ export default function TripPreferenceForm({ onSubmit, loading = false }: TripPr
         {/* Section: Trip Details */}
         <section>
           <h3 style={{ fontSize: 'var(--font-size-lg)', fontWeight: 700, marginBottom: 'var(--space-5)', color: 'var(--color-teal-300)' }}>
-            📅 Trip Details
+            📅 Trip Dates & Travelers
           </h3>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--space-4)' }}>
             <div className="form-group">
-              <label className="form-label">Number of Days <span className="req">*</span></label>
+              <label className="form-label">Duration (Days) <span className="req">*</span></label>
               <input
                 type="number"
                 className="form-input"
@@ -155,7 +157,29 @@ export default function TripPreferenceForm({ onSubmit, loading = false }: TripPr
             </div>
 
             <div className="form-group">
-              <label className="form-label">Traveler Type <span className="req">*</span></label>
+              <label className="form-label">Start Date (optional)</label>
+              <input
+                type="date"
+                className="form-input"
+                value={form.start_date || ''}
+                onChange={(e) => setForm((f) => ({ ...f, start_date: e.target.value }))}
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Number of Travelers</label>
+              <input
+                type="number"
+                className="form-input"
+                min={1}
+                max={50}
+                value={form.num_travelers || 1}
+                onChange={(e) => setForm((f) => ({ ...f, num_travelers: parseInt(e.target.value) || 1 }))}
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Traveler Party Type <span className="req">*</span></label>
               <select
                 className="form-select"
                 value={form.traveler_type}

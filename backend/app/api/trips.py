@@ -16,6 +16,8 @@ class CreateTripPayload(BaseModel):
     travel_vibe: str = "mixed"
     budget_level: str = "moderate"
     travel_days: int = 5
+    start_date: Optional[str] = None
+    num_travelers: Optional[int] = 1
     traveler_type: str = "solo"
     interests: List[str] = []
     is_demo: bool = False
@@ -27,6 +29,8 @@ class UpdateTripPayload(BaseModel):
     travel_vibe: Optional[str] = None
     budget_level: Optional[str] = None
     travel_days: Optional[int] = None
+    start_date: Optional[str] = None
+    num_travelers: Optional[int] = None
     traveler_type: Optional[str] = None
     interests: Optional[List[str]] = None
 
