@@ -33,7 +33,6 @@ def _get_gemini_client():
     if not settings.gemini_api_key:
         return None
     try:
-        import google.generativeai as genai
         genai.configure(api_key=settings.gemini_api_key)
         _gemini_client = genai.GenerativeModel(
             model_name="gemini-1.5-flash",
